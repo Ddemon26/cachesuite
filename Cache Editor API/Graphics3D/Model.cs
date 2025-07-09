@@ -34,9 +34,21 @@ namespace Cache_Editor_API.Graphics3D
 
 		public static void LoadModel(byte[] abyte0, int j)
 		{
-			if (aModelHeaderArray1661 == null)
-				aModelHeaderArray1661 = new ModelHeader[10000];
-			if (abyte0 == null)
+if (aModelHeaderArray1661 == null)
+aModelHeaderArray1661 = new ModelHeader[10000];
+
+// Ensure the header array can store this model id.  In older
+// revisions the array was fixed at 10,000 entries which prevented
+// loading models with higher ids.  Grow the array dynamically when
+// needed.
+if (j >= aModelHeaderArray1661.Length)
+{
+int newSize = aModelHeaderArray1661.Length * 2;
+if (newSize <= j)
+newSize = j + 1;
+Array.Resize(ref aModelHeaderArray1661, newSize);
+}
+if (abyte0 == null)
 			{
 				ModelHeader class21 = aModelHeaderArray1661[j] = new ModelHeader();
 				class21.anInt369 = 0;
