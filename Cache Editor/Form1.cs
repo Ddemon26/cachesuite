@@ -92,9 +92,9 @@ namespace Cache_Editor
 		private void PopulateFileBrowser()
 		{
 			file_browser.Nodes.Clear();
-			for (int i = 0; i < 5; i++)
-			{
-				CacheItemNode node = new CacheItemNode(Cache.Archives[i].ArchiveName + " (" + Cache.Archives[i].GetFileCount() + " files)", Cache.Archives[i].ArchiveName, i, -1, -1, 0);
+                        for (int i = 0; i < Cache.Archives.Length; i++)
+                        {
+                                CacheItemNode node = new CacheItemNode(Cache.Archives[i].ArchiveName + " (" + Cache.Archives[i].GetFileCount() + " files)", Cache.Archives[i].ArchiveName, i, -1, -1, 0);
 				for (int k = 0; k < Cache.Archives[i].GetFileCount(); k++)
 				{
 					if (i > 0)
