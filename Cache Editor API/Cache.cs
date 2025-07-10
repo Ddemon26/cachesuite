@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 
 namespace Cache_Editor_API
 {
@@ -13,25 +11,36 @@ namespace Cache_Editor_API
 		public Archive[] Archives { get; set; }
 		public List<SubArchive> SubArchives { get; set; }
 
-		public static string[] ArchiveNames = { "Sub-Archives", "Models", "Animations", "Midis", "Maps" };
-		public static string[] SubNames = { "Sub-archive 0", "Title", "Config", "Interface", "Media", "Versions", "Textures", "Chat", "Sounds" };
+                private static readonly string[] DefaultArchiveNames = { "Sub-Archives", "Models", "Animations", "Midis", "Maps" };
+                public static string[] ArchiveNames { get; private set; } = DefaultArchiveNames;
+                public static string[] SubNames = { "Sub-archive 0", "Title", "Config", "Interface", "Media", "Versions", "Textures", "Chat", "Sounds" };
 
-		public Cache()
-		{
-			Archives = new Archive[5];
-			SubArchives = new List<SubArchive>();
-		}
+                public Cache()
+                {
+                        Archives = Array.Empty<Archive>();
+                        SubArchives = new List<SubArchive>();
+                }
 
-		public void LoadCache(string folder)
-		{
-			DataFile = new FileStream(folder + "main_file_cache.dat", FileMode.Open);
+                public void LoadCache(string folder)
+                {
+                        DataFile = new FileStream(Path.Combine(folder, "main_file_cache.dat"), FileMode.Open);
 
-			for (int i = 0; i < 5; i++)
-			{
-				Archives[i] = new Archive(ArchiveNames[i], DataFile, new FileStream(folder + "main_file_cache.idx" + i, FileMode.Open));
-				Archives[i].ArchiveIndex = i;
-			}
-		}
+                        var idxFiles = Directory.GetFiles(folder, "main_file_cache.idx*")
+                                             .Select(f => new { Path = f, Index = int.Parse(Path.GetFileName(f).Substring("main_file_cache.idx".Length)) })
+                                             .OrderBy(f => f.Index)
+                                             .ToArray();
+
+                        Archives = new Archive[idxFiles.Length];
+                        ArchiveNames = new string[idxFiles.Length];
+
+                        for (int i = 0; i < idxFiles.Length; i++)
+                        {
+                                string name = i < DefaultArchiveNames.Length ? DefaultArchiveNames[i] : $"Archive {i}";
+                                ArchiveNames[i] = name;
+                                Archives[i] = new Archive(name, DataFile, new FileStream(idxFiles[i].Path, FileMode.Open));
+                                Archives[i].ArchiveIndex = i;
+                        }
+                }
 
 		public void WriteFile(CacheItemNode node, byte[] data)
 		{
