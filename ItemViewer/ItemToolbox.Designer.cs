@@ -50,7 +50,7 @@
 			// 
 			this.nItem.Location = new System.Drawing.Point(55, 19);
 			this.nItem.Maximum = new decimal(new int[] {
-            10000,
+				2147483647,
             0,
             0,
             0});
